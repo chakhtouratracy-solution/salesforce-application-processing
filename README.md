@@ -16,7 +16,7 @@ Both entry points use the same Apex business service to ensure consistent proces
 The public application submission form is available through the Experience Cloud site:
 
 ```
-https://orgfarm-ee15bc1143-dev-ed.develop.my.site.com/applicationform/
+https://orgfarm-ee15bc1143-dev-ed.develop.my.site.com/applicationform
 ```
 
 External users can access the form without Salesforce credentials and submit applications through the public LWC form.
@@ -239,7 +239,7 @@ The test class covers:
 After publishing the Experience Cloud site, the application form can be accessed using:
 
 ```
-https://orgfarm-ee15bc1143-dev-ed.develop.my.site.com/applicationform/
+https://orgfarm-ee15bc1143-dev-ed.develop.my.site.com/applicationform
 ```
 
 The form does not require Salesforce authentication and can be accessed by external users.
