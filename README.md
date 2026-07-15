@@ -7,19 +7,40 @@ This project implements a Salesforce application intake solution that allows ext
 1. Public Experience Cloud site using a Lightning Web Component (LWC) form.
 2. Public REST API webhook endpoint receiving JSON payloads from external systems.
 
-Both entry points use the same Apex business service to ensure consistent processing logic.
+Both entry points use the same Apex business service to ensure consistent processing logic and avoid duplicated business rules.
 
-### Business Logic
+---
+
+# Demo Access
+
+The public application submission form is available through the Experience Cloud site:
+
+```
+https://orgfarm-ee15bc1143-dev-ed.develop.my.site.com/applicationform/
+```
+
+External users can access the form without Salesforce credentials and submit applications through the public LWC form.
+
+---
+
+# Business Logic
 
 When an application is submitted:
 
 - The system searches for an existing Account:
+
   - First by Federal Tax ID.
   - If Federal Tax ID is not provided, by exact Account Name match.
+
 - If a matching Account exists:
+
   - An Opportunity is created.
+
 - If no matching Account exists:
+
   - A Lead is created.
+
+All application submissions are processed through the shared `ApplicationProcessingService` Apex class to ensure the same logic is applied regardless of the submission channel.
 
 ---
 
@@ -28,26 +49,36 @@ When an application is submitted:
 ## Apex Classes
 
 - `ApplicationDTO`
+
   - Wrapper class representing application input data.
 
 - `ApplicationResult`
+
   - Wrapper class returning processing results.
 
 - `ApplicationFormController`
-  - Apex controller used by the Experience Cloud LWC.
+
+  - Apex controller used by the Experience Cloud Lightning Web Component.
 
 - `ApplicationWebhook`
+
   - Public REST endpoint receiving external application submissions.
 
 - `ApplicationProcessingService`
-  - Shared business logic responsible for Account matching and record creation.
+
+  - Shared business logic responsible for:
+    - Account matching.
+    - Lead creation.
+    - Opportunity creation.
+    - Application source handling.
 
 - `ApplicationProcessingServiceTest`
-  - Apex test class covering Lead and Opportunity scenarios.
+
+  - Apex test class covering Lead and Opportunity creation scenarios.
 
 ---
 
-## Lightning Web Component
+# Lightning Web Component
 
 Component:
 
@@ -61,7 +92,39 @@ Responsibilities:
 - Validate required inputs.
 - Call Apex controller.
 - Display loading state.
-- Display success/error messages.
+- Display success and error messages.
+- Submit applications from the public Experience Cloud site.
+
+---
+
+# Salesforce Configuration
+
+The solution includes the following Salesforce metadata:
+
+- Custom fields.
+- Custom labels.
+- Apex classes.
+- Lightning Web Component.
+- Experience Cloud configuration.
+- REST API endpoint.
+
+---
+
+# Custom Labels
+
+The solution uses Salesforce Custom Labels for configurable values and messages instead of hardcoding values inside Apex or Lightning components.
+
+Custom Labels can be managed from:
+
+```
+Setup → Custom Labels
+```
+
+Benefits:
+
+- Easier maintenance.
+- Supports future translations.
+- Allows administrators to update messages without changing code.
 
 ---
 
@@ -69,17 +132,22 @@ Responsibilities:
 
 The solution uses standard Salesforce objects with custom fields.
 
+---
+
 ## Lead
 
 Custom Fields:
 
-- `Federal_Tax_Id__c`
-  - Stores the applicant Federal Tax ID.
+### `Federal_Tax_Id__c`
 
-- `Application_Source__c`
-  - Picklist values:
-    - Community
-    - Webhook
+- Stores the applicant Federal Tax ID.
+
+### `Application_Source__c`
+
+Picklist values:
+
+- Community
+- Webhook
 
 ---
 
@@ -87,9 +155,10 @@ Custom Fields:
 
 Custom Field:
 
-- `Federal_Tax_Id__c`
-  - Stores the Account Federal Tax ID.
-  - Configured as **Unique** to ensure each Federal Tax ID belongs to only one Account.
+### `Federal_Tax_Id__c`
+
+- Stores the Account Federal Tax ID.
+- Configured as **Unique** to ensure each Federal Tax ID belongs to only one Account.
 
 ---
 
@@ -97,10 +166,12 @@ Custom Field:
 
 Custom Field:
 
-- `Application_Source__c`
-  - Picklist values:
-    - Community
-    - Webhook
+### `Application_Source__c`
+
+Picklist values:
+
+- Community
+- Webhook
 
 ---
 
@@ -124,7 +195,7 @@ sf project deploy start
 
 ---
 
-## Run Apex Tests
+# Run Apex Tests
 
 Run:
 
@@ -143,13 +214,35 @@ The test class covers:
 
 # Experience Cloud Configuration
 
+## Setup Steps
+
 1. Enable Digital Experiences.
+
 2. Create an Experience Cloud site.
+
 3. Add the `applicationForm` Lightning Web Component to a public page.
+
 4. Publish the site.
+
 5. Configure Guest User permissions:
+
    - Enable access to required Apex classes.
-   - Provide required object and field permissions.
+   - Provide required object permissions.
+   - Provide required field-level permissions.
+
+6. Configure the public URL.
+
+---
+
+## Public Application Form URL
+
+After publishing the Experience Cloud site, the application form can be accessed using:
+
+```
+https://orgfarm-ee15bc1143-dev-ed.develop.my.site.com/applicationform/
+```
+
+The form does not require Salesforce authentication and can be accessed by external users.
 
 ---
 
@@ -161,7 +254,9 @@ The test class covers:
 POST /services/apexrest/external/applications
 ```
 
-Example request:
+---
+
+## Example Request
 
 ```json
 {
@@ -177,7 +272,9 @@ Example request:
 }
 ```
 
-Example successful response:
+---
+
+## Example Successful Response
 
 ```json
 {
@@ -194,8 +291,10 @@ Example successful response:
 
 - Federal Tax ID is considered a unique identifier for Accounts.
 - Account matching is performed using:
+
   1. Federal Tax ID when available.
   2. Exact Account Name when Federal Tax ID is blank.
+
 - Duplicate Account Federal Tax IDs are prevented through Salesforce field uniqueness.
 - No attachment download or processing is required for this exercise.
 - Authentication/security hardening for the public webhook would be added in a production implementation.
@@ -211,3 +310,7 @@ For a production implementation, additional improvements could include:
 - Duplicate management rules.
 - Asynchronous processing for high-volume integrations.
 - Enhanced logging and monitoring.
+- Platform Events for event-driven processing.
+- Custom error logging object for failed submissions.
+
+---
