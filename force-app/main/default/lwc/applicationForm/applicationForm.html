@@ -1,0 +1,141 @@
+<template>
+
+    <template if:true={isLoading}>
+        <lightning-spinner
+            alternative-text="Processing application"
+            size="medium">
+        </lightning-spinner>
+    </template>
+
+
+    <lightning-card title="Application Form">
+
+        <div class="slds-p-around_medium">
+
+            <lightning-input
+                label="Company Name"
+                data-field="companyName"
+                value={application.companyName}
+                required
+                onchange={handleChange}>
+            </lightning-input>
+
+
+            <lightning-input
+                label="Federal Tax ID"
+                data-field="federalTaxId"
+                value={application.federalTaxId}
+                onchange={handleChange}>
+            </lightning-input>
+
+
+            <lightning-input
+                label="First Name"
+                data-field="contact.firstName"
+                value={application.contact.firstName}
+                required
+                onchange={handleChange}>
+            </lightning-input>
+
+
+            <lightning-input
+                label="Last Name"
+                data-field="contact.lastName"
+                value={application.contact.lastName}
+                required
+                onchange={handleChange}>
+            </lightning-input>
+
+
+            <lightning-input
+                type="email"
+                label="Email"
+                data-field="contact.email"
+                value={application.contact.email}
+                required
+                onchange={handleChange}>
+            </lightning-input>
+
+
+            <lightning-input
+                type="tel"
+                label="Phone"
+                data-field="contact.phone"
+                value={application.contact.phone}
+                onchange={handleChange}>
+            </lightning-input>
+
+
+            <lightning-input
+                type="number"
+                label="Annual Revenue"
+                data-field="annualRevenue"
+                value={application.annualRevenue}
+                onchange={handleChange}>
+            </lightning-input>
+
+
+
+            <div class="slds-grid slds-grid_align-spread slds-m-top_medium">
+
+                <div>
+
+                    <template if:true={message}>
+
+                        <template if:true={isSuccess}>
+
+                            <div class="slds-text-color_success">
+                                {message}
+
+
+                            <template if:true={result}>
+
+                                <p>
+                                    Record Type: {result.recordType}
+                                </p>
+
+                                <p>
+                                    Record Id: {result.recordId}
+                                </p>
+
+                            </template>
+                            </div>
+                        </template>
+
+
+
+                        <template if:false={isSuccess}>
+
+                            <div class="slds-text-color_error">
+                                {message}
+                            </div>
+
+                        </template>
+
+                    </template>
+
+                </div>
+
+
+
+                <div>
+
+                    <lightning-button
+                        label="Submit"
+                        variant="brand"
+                        onclick={handleSubmit}
+                        disabled={isLoading}>
+                    </lightning-button>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </lightning-card>
+
+
+</template>
