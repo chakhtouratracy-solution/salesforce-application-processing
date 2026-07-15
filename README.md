@@ -23,40 +23,6 @@ When an application is submitted:
 
 ---
 
-# Architecture
-
-```
-Experience Cloud LWC
-        |
-        |
-ApplicationFormController
-        |
-        |
-        +----------------+
-                         |
-                         |
-        ApplicationProcessingService
-                         |
-             +-----------+-----------+
-             |                       |
-             |                       |
-        Account Found          No Account Found
-             |                       |
-             |                       |
-       Opportunity               Lead
-
-
-External System
-        |
-        |
-ApplicationWebhook
-        |
-        |
-ApplicationProcessingService
-```
-
----
-
 # Components
 
 ## Apex Classes
